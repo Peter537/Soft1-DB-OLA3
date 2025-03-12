@@ -57,15 +57,15 @@ Read [this text](application-concurrency-note.md) first that describes and illus
 
 ## **📌 Exercises**
 
-### **1️⃣ Implement Optimistic Concurrency Control for Tournament Registration**
+### **1⃣ Implement Optimistic Concurrency Control for Tournament Updates**
 
-📌 **Problem:** Two players attempt to register for the same tournament at the same time. If the **max_players** limit is reached, one should be rejected.
+📌 **Problem:** Two admins attempt to change **the start date** for the same tournament at the same time.
 
 ✅ **Task:**
 
 - Add a **version column** to `Tournaments`.
-- Implement **version-based optimistic concurrency control** in Java using JDBC.
-- Ensure that only one registration is successful when two concurrent users try to register.
+- Implement **version-based optimistic concurrency control**
+- Ensure that only one change is successful when two concurrent admins try to update.
 
 #### **Example: Version Column for Optimistic Concurrency Control**
 
@@ -81,7 +81,7 @@ String query = "UPDATE Tournaments SET version = version + 1 WHERE tournament_id
 
 ---
 
-### **2️⃣ Implement Pessimistic Concurrency Control for Match Updates**
+### **2⃣ Implement Pessimistic Concurrency Control for Match Updates**
 
 📌 **Problem:** Two admins attempt to update the **same match result** at the same time. Ensure only one update happens at a time.
 
@@ -98,7 +98,7 @@ SELECT * FROM Matches WHERE match_id = 1 FOR UPDATE;
 
 ---
 
-### **3️⃣ Handle Transactions for Tournament Registrations**
+### **3⃣ Handle Transactions for Tournament Registrations**
 
 📌 **Problem:** Ensure **atomicity** when registering a player in a tournament. If any part of the transaction fails, rollback all changes.
 
@@ -154,7 +154,18 @@ stmt.execute();
 
 ---
 
-### **5️⃣ Compare Optimistic vs. Pessimistic Concurrency Control**
+### **5⃣ Implement Concurrency Control of Your Own Choice for Tournament Registration**
+
+📌 **Problem:** Two players attempt to register for the same tournament at the same time. If the **max_players** limit is reached, one should be rejected.
+
+✅ **Task:**
+
+-
+- Ensure that only one registration is successful when two concurrent users try to register.
+
+---
+
+### **6⃣ Compare Optimistic vs. Pessimistic Concurrency Control**
 
 📌 **Problem:** Run a performance test comparing Optimistic and Pessimistic Concurrency Control under heavy load.
 
