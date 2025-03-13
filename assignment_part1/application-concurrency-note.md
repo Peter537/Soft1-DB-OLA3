@@ -4,11 +4,11 @@ Concurrency control is essential to prevent data inconsistencies when multiple t
 
 [Optimistic Currency Control](https://martinfowler.com/eaaCatalog/optimisticOfflineLock.html), also known as optimistic locking, solves this problem by validating that the changes about to be committed by one session don't conflict with the changes of another session. A successful pre-commit validation is, in a sense, obtaining a lock indicating it's okay to go ahead with the changes to the record data. So long as the validation and the updates occur within a single system transaction the business transaction will display consistency.
 
-![OptimisticSketch](https://github.com/user-attachments/assets/b849cedf-c897-4540-9813-d8f9518e421e)
+![OptimisticSketch](img/OptimisticSketch.gif)
 
 [Pessimistic Locking](https://martinfowler.com/eaaCatalog/pessimisticOfflineLock.html), on the other hand, assumes that the chance of session conflict is high and therefore limits the system's concurrency to prevent conflicts between concurrent business transactions. Pessimistic Locking allows only one business transaction at a time to access data. It forces a business transaction to acquire a lock on a piece of data before it starts to use it, so that once you begin a business transaction you can be pretty sure you'll complete it without being bounced by concurrency control. Optimistic Lock assumes that the chance of conflict is low. The expectation that session conflict isn't likely allows multiple users to work with the same data at the same time.
 
-![PessimisticSketch](https://github.com/user-attachments/assets/21c43d7b-743f-4e00-8c74-f60c6ed00bb0)
+![PessimisticSketch](img/PessimisticSketch.gif)
 
 ### **How Optimistic Concurrency Control Works**
 
