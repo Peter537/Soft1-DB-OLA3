@@ -18,7 +18,7 @@ Vores rapport er lavet i [concurrency-report.md](./concurrency-report.md)
 
 ## Part 2
 
-Vores opgave omkring Denormalisation & Partitioning er lavet i [denormalisation_partitioning.md](./denormalisation_partitioning.md)
+Vores opgave omkring Denormalisation & Partitioning er lavet i [denormalisation-partitioning.md](./denormalisation-partitioning.md)
 
 Vores opgave omkring Query Optimization er lavet i [query-optimization.md](./query-optimization.md)
 
