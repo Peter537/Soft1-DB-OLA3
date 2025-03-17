@@ -72,7 +72,7 @@ ALTER TABLE tournaments ADD COLUMN version INT NOT NULL DEFAULT 1;
 ### **Test Parameters:**
 
 | Parameter                             | Value              |
-| ------------------------------------- |--------------------|
+| ------------------------------------- | ------------------ |
 | **Number of concurrent transactions** | 10                 |
 | **Database**                          | PostgreSQL         |
 | **Execution Environment**             | Localhost / Docker |
@@ -84,44 +84,45 @@ ALTER TABLE tournaments ADD COLUMN version INT NOT NULL DEFAULT 1;
 
 ### **1️⃣ Optimistic Concurrency Control (OCC) Results**
 
-**Test Scenario:** [Describe how OCC was tested]
+**Test Scenario:** We try to add 10 players to the same tournament concurrently, where the tournament has a maximum capacity of 8 players.
 
 | **Metric**                                | **Value** |
-| ----------------------------------------- |-----------|
+| ----------------------------------------- | --------- |
 | Execution Time (ms)                       | 478ms     |
 | Number of successful transactions         | 8         |
 | Number of retries due to version mismatch | 54        |
 
 **Observations:**
 
-- [Summarize key findings related to OCC]
+- We only see 8 successful transactions out of 10 due to the maximum capacity of the tournament.
+- The version mismatch caused 54 retries, which increased the execution time.
 
 ---
 
 ### **2️⃣ Pessimistic Concurrency Control (PCC) Results**
 
-**Test Scenario:** [Describe how PCC was tested]
+**Test Scenario:** We try to update the same match result 10 times concurrently.
 
 | **Metric**                                           | **Value** |
-| ---------------------------------------------------- |-----------|
+| ---------------------------------------------------- | --------- |
 | Execution Time (ms)                                  | 120ms     |
 | Number of successful transactions                    | 10        |
 | Number of transactions that had to wait due to locks | 9         |
 
 **Observations:**
 
-- [Summarize key findings related to PCC]
+- All 10 transactions were successful, they just had to wait their turn due to the locks.
 
 ---
 
 ## **📌 Comparison Table**
 
 | **Metric**               | **Optimistic CC** | **Pessimistic CC** |
-| ------------------------ |------------------|--------------------|
-| **Execution Time**       | 478ms            | 120ms              |
-| **Transaction Failures** | 2 (retries)      | 0                  |
-| **Lock Contention**      | Low              | High               |
-| **Best Use Case**        | Reading data     | Inserting data     |
+| ------------------------ | ----------------- | ------------------ |
+| **Execution Time**       | 478ms             | 120ms              |
+| **Transaction Failures** | 2 (retries)       | 0                  |
+| **Lock Contention**      | Low               | High               |
+| **Best Use Case**        | Reading data      | Inserting data     |
 
 ---
 
@@ -137,8 +138,10 @@ _You *may* want to visualize your finding by including a chart that illustrates 
 
 ### **Key Findings:**
 
-- [Summarize overall findings and comparison of OCC vs. PCC]
+- **Optimistic Concurrency Control (OCC)** is better suited for scenarios where conflicts are rare, and the cost of retries is low.
+- **Pessimistic Concurrency Control (PCC)** is better suited for scenarios where conflicts are common, and the cost of waiting is low.
 
 ### **Final Recommendations:**
 
-- [Provide recommendations based on the test results]
+- **Use OCC** when you have a high read-to-write ratio and low contention.
+- **Use PCC** when you have a high write-to-read ratio and high contention.
