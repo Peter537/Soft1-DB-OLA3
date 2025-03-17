@@ -1,4 +1,4 @@
-package soft.esport.config;
+package soft.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

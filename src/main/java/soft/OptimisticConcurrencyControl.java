@@ -1,6 +1,6 @@
-package soft.esport;
+package soft;
 
-import soft.esport.config.DatabaseConfig;
+import soft.config.DatabaseConfig;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
