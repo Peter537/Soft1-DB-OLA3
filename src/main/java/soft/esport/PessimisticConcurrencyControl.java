@@ -1,6 +1,6 @@
-package soft;
+package soft.esport;
 
-import soft.config.DatabaseConfig;
+import soft.esport.config.DatabaseConfig;
 
 import java.sql.*;
 import java.util.concurrent.atomic.AtomicInteger;
