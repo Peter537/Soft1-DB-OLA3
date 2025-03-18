@@ -30,4 +30,4 @@ Denormalization is a smart thing to do if we use the same data often, since we c
 
 In Partitioning, if our partitioning key are changing a lot, it can be difficult to maintain it correctly, but if they stay the same (for instance regions like Region Hovedstaden), then it can be a good idea to use partitioning.
 
-We are using PostgreSQL, and from what we have seen, the main differences between MySQL and PostgreSQL is the syntax.
+We are using PostgreSQL, and from what we have seen, the main differences between MySQL and PostgreSQL is the syntax. One thing thats is important to note is that when using indexes in PostgreSQL you have to use `SET enable_seqscan = OFF;` in order to use the indexes, since PostgreSQL uses sequential scans by default.
