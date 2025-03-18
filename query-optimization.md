@@ -1,35 +1,6 @@
 # Query Optimization
 
-## Exercise 1
-
-The slow query:
-```sql
-SELECT order_id, total_amount,
-       (SELECT name FROM Customers WHERE customer_id = Orders.customer_id) AS customer_name
-FROM Orders
-WHERE total_amount > 100;
-```
-
-The optimized query:
-```sql
-SELECT order_id, total_amount, c.name AS customer_name
-FROM Orders
-JOIN Customers c ON Orders.customer_id = c.customer_id
-WHERE total_amount > 100;
-```
-We have optimized the query be removing the subquery and instead using a Join to fetch the customer name. 
-
-Know we can use Explain to verify the index usage and scan the rows.
-```sql
-EXPLAIN SELECT order_id, total_amount, c.name AS customer_name
-FROM Orders
-JOIN Customers c ON Orders.customer_id = c.customer_id
-WHERE total_amount > 100;
-```
-
-TODO: foto to explain index usage and row scans.
-
-## Exercise 2
+## Scripts for the exercises
 
 We have made a little database for this task and added som dummy data to it.
 
@@ -83,8 +54,36 @@ BEGIN
 END $$;
 ```
 
+## Exercise 1
+
+The slow query:
+
 ```sql
-EXPLAIN SELECT o.order_id, o.total_amount, c.name
+EXPLAIN ANALYZE SELECT order_id, total_amount,
+       (SELECT name FROM Customers WHERE customer_id = Orders.customer_id) AS customer_name
+FROM Orders
+WHERE total_amount > 100;
+```
+
+![alt text](./img/q-e1-e1.png)
+
+The optimized query:
+
+```sql
+EXPLAIN ANALYZE SELECT order_id, total_amount, c.name AS customer_name
+FROM Orders
+JOIN Customers c ON Orders.customer_id = c.customer_id
+WHERE total_amount > 100;
+```
+
+![alt text](./img/q-e1-e2.png)
+
+We can see that the execution time for the omptimized query (~34 ms) is much faster than the slow query (~157 ms).
+
+## Exercise 2
+
+```sql
+EXPLAIN ANALYZE SELECT o.order_id, o.total_amount, c.name
 FROM Orders o
 JOIN Customers c ON o.customer_id = c.customer_id
 WHERE o.order_date > '2023-01-01';
@@ -92,19 +91,36 @@ WHERE o.order_date > '2023-01-01';
 
 ![alt text](./img/q-e2-e1.png)
 
-We have created an index on order_date to optimize the query.
+We have created an index on customer_id to optimize the query.
 
 ```sql
-CREATE INDEX idx_order_order_date ON Orders(order_date);
+CREATE INDEX idx_order_customer_id ON Orders(customer_id);
 ```
 
 We can now run the query again and see the difference.
 
 ![alt text](./img/q-e2-e2.png)
 
+There is not a big difference in the execution time, this is more then likely because the data set is so small. But in a larger data set the difference would be more noticable.
+
 ## Exercise 3
 
 The N+1 Query Problem happens when a query is executed to fetch a list of entities, and then for each entity, another query is executed to fetch related entities. This results in N+1 queries being executed, where N is the number of entities fetched in the first query.
+
+The N+1 Query:
+
+```sql
+-- Fetch all orders first
+SELECT order_id, customer_id FROM Orders WHERE order_date > '2023-01-01';
+
+-- Then, for each order, fetch customer name separately
+SELECT name FROM Customers WHERE customer_id = 1;
+SELECT name FROM Customers WHERE customer_id = 2;
+SELECT name FROM Customers WHERE customer_id = 3;
+...
+```
+
+The rewiten query:
 
 ```sql
 SELECT o.order_id, c.customer_id, c.name AS customer_name
@@ -112,6 +128,8 @@ FROM Orders o
 JOIN Customers c on o.customer_id = c.customer_id
 WHERE o.order_date > '2023-01-01';
 ```
+
+In stead of running two separate queries we have joined the two tables and fetched the customer name in the same query.
 
 ## Exercise 4
 
