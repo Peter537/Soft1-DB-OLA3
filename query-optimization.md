@@ -2,13 +2,24 @@
 
 ## Exercise 1
 
+The slow query:
+```sql
+SELECT order_id, total_amount,
+       (SELECT name FROM Customers WHERE customer_id = Orders.customer_id) AS customer_name
+FROM Orders
+WHERE total_amount > 100;
+```
+
+The optimized query:
 ```sql
 SELECT order_id, total_amount, c.name AS customer_name
 FROM Orders
 JOIN Customers c ON Orders.customer_id = c.customer_id
 WHERE total_amount > 100;
 ```
+We have optimized the query be removing the subquery and instead using a Join to fetch the customer name. 
 
+Know we can use Explain to verify the index usage and scan the rows.
 ```sql
 EXPLAIN SELECT order_id, total_amount, c.name AS customer_name
 FROM Orders
@@ -16,7 +27,11 @@ JOIN Customers c ON Orders.customer_id = c.customer_id
 WHERE total_amount > 100;
 ```
 
+TODO: foto to explain index usage and row scans.
+
 ## Exercise 2
+
+We have made a little database for this task and added som dummy data to it.
 
 ```sql
 -- Create the Customers table
@@ -32,13 +47,6 @@ CREATE TABLE Orders (
     total_amount NUMERIC(10, 2) NOT NULL,
     order_date DATE NOT NULL
 );
-```
-
-```sql
-EXPLAIN SELECT o.order_id, o.total_amount, c.name
-FROM Orders o
-JOIN Customers c ON o.customer_id = c.customer_id
-WHERE o.order_date > '2023-01-01';
 ```
 
 ```sql
@@ -75,11 +83,22 @@ BEGIN
 END $$;
 ```
 
+```sql
+EXPLAIN SELECT o.order_id, o.total_amount, c.name
+FROM Orders o
+JOIN Customers c ON o.customer_id = c.customer_id
+WHERE o.order_date > '2023-01-01';
+```
+
 ![alt text](./img/q-e2-e1.png)
+
+We have created an index on order_date to optimize the query.
 
 ```sql
 CREATE INDEX idx_order_order_date ON Orders(order_date);
 ```
+
+We can now run the query again and see the difference.
 
 ![alt text](./img/q-e2-e2.png)
 
