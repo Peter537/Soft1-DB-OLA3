@@ -1,7 +1,7 @@
 # Query Optimization
 
-## Scripts for the exercises
 
+Scripts for the exercises 1, 2, and 3:
 We have made a little database for this task and added som dummy data to it.
 
 ```sql
@@ -78,7 +78,7 @@ WHERE total_amount > 100;
 
 ![alt text](./img/q-e1-e2.png)
 
-We can see that the execution time for the omptimized query (~34 ms) is much faster than the slow query (~157 ms).
+We can see that the execution time for the omptimized query (~34 ms) is much faster than the slow query (~157 ms). We can also see that is went through 50888 rows one time on the orders table and 10 rows on the customer table.
 
 ## Exercise 2
 
@@ -101,7 +101,7 @@ We can now run the query again and see the difference.
 
 ![alt text](./img/q-e2-e2.png)
 
-There is not a big difference in the execution time, this is more then likely because the data set is so small. But in a larger data set the difference would be more noticable.
+There is not a big difference in the execution time (~1 ms), this is more then likely because the data set is so small. But in a larger data set the difference would be more noticable. How ever we can se that the query is now using index scan insted of sequential scan on customer_id.
 
 ## Exercise 3
 
@@ -133,6 +133,7 @@ In stead of running two separate queries we have joined the two tables and fetch
 
 ## Exercise 4
 
+Script for inserting data into the database (ran this 4 times): 
 ```sql
 -- Insert 100 products into the Products table
 INSERT INTO Products (name, category, price)
@@ -156,6 +157,10 @@ FROM generate_series(1, 500000) AS gs;
 
 ![alt text](./img/q-e4-e1.png)
 
+We can see its set planned workers to 2 and workers launced to 2 which means including the main worker there are a total of 3 workers. So for each worker there are 666.667 rows (total 2.000.000) to process on the Sales table and 400 rows (total 1200) on the Products table.
+
+Furthermore we can observe that the out says Parallel Sequential Scan instead of index scan and also there are bebing used Sequential scan on products which tells us that there are no index used for filtering or joining.
+
 ### Task 2
 
 ```sql
@@ -166,10 +171,21 @@ WHERE tablename = 'Sales';
 
 ![alt text](./img/q-e4-i1.png)
 
+We have verified that at this moment there are no indexes on the Sales table.
+
 ### Task 3
 
+We have add the following indexes to the database:
+
 ```sql
-SELECT p.category, SUM(s.total_amount) AS total_sales
+CREATE INDEX idx_product_id ON Sales(product_id);
+CREATE INDEX idx_category ON Products(category);
+```
+
+Then we run the following query:
+
+```sql
+EXPLAIN ANALYZE SELECT p.category, SUM(s.total_amount) AS total_sales
 FROM Sales s
 JOIN Products p ON s.product_id = p.product_id
 GROUP BY p.category;
@@ -177,12 +193,9 @@ GROUP BY p.category;
 
 ![alt text](./img/q-e4-et1.png)
 
-```sql
-CREATE INDEX idx_product_id ON Sales(product_id);
-CREATE INDEX idx_category ON Products(category);
-```
+First of all the execution time became worse, went from ~882 ms to ~1420 ms.
 
-![alt text](./img/q-e4-et2.png)
+We can see that it is using index scan for the products table and the index scan for the sales table; however it seem as its still scanning the full 2.000.000 rows in the sales table and 1200 rows in the products table.
 
 ### Task 4
 
@@ -191,3 +204,5 @@ CREATE INDEX idx_sales_optimized ON Sales(product_id, total_amount);
 ```
 
 ![alt text](./img/q-e4-et3.png)
+
+We can see that the query is now using the covering index `idx_sales_optimized` and after adding this covering index the execution time went down to ~662 ms.
